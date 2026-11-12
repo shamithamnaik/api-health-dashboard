@@ -46,3 +46,12 @@ config/      SecurityConfig, KafkaConfig, DataInitializer
 `docker compose up postgres kafka grafana`, then `cd backend && mvn spring-boot:run`
 (Kafka advertises `kafka:9092`; for host access add `127.0.0.1 kafka` to your hosts file),
 and `cd frontend && npm install && npm start` (proxies /api to :8080).
+
+## Screenshots
+
+### Live dashboard
+![Dashboard](docs/dashboard.png)
+
+### Login
+![Login](docs/login.png)
+
