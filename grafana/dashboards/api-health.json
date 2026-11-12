@@ -1,0 +1,47 @@
+{
+  "uid": "api-health",
+  "title": "API Health",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "id": 1, "type": "stat", "title": "APIs UP",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "monitor-db" },
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "green" } }, "overrides": [] },
+      "targets": [ { "refId": "A", "format": "table", "rawQuery": true, "editorMode": "code",
+        "rawSql": "SELECT count(*) AS up FROM api_endpoint WHERE enabled AND last_status = 'UP'" } ]
+    },
+    {
+      "id": 2, "type": "stat", "title": "APIs DOWN",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "monitor-db" },
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "red" } }, "overrides": [] },
+      "targets": [ { "refId": "A", "format": "table", "rawQuery": true, "editorMode": "code",
+        "rawSql": "SELECT count(*) AS down FROM api_endpoint WHERE enabled AND last_status = 'DOWN'" } ]
+    },
+    {
+      "id": 3, "type": "table", "title": "Current status",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "monitor-db" },
+      "targets": [ { "refId": "A", "format": "table", "rawQuery": true, "editorMode": "code",
+        "rawSql": "SELECT env, name, type, last_status AS status, last_response_ms AS ms, last_checked_at FROM api_endpoint WHERE enabled ORDER BY env, name" } ]
+    },
+    {
+      "id": 4, "type": "timeseries", "title": "Response time (ms) per API",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 8 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "monitor-db" },
+      "targets": [ { "refId": "A", "format": "time_series", "rawQuery": true, "editorMode": "code",
+        "rawSql": "SELECT l.checked_at AS time, e.name || ' (' || e.env || ')' AS metric, l.response_time_ms AS value FROM check_log l JOIN api_endpoint e ON e.id = l.api_id WHERE $__timeFilter(l.checked_at) ORDER BY 1" } ]
+    },
+    {
+      "id": 5, "type": "table", "title": "Recent failures",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 17 },
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "monitor-db" },
+      "targets": [ { "refId": "A", "format": "table", "rawQuery": true, "editorMode": "code",
+        "rawSql": "SELECT l.checked_at, e.env, e.name, l.http_status, l.response_time_ms, l.message FROM check_log l JOIN api_endpoint e ON e.id = l.api_id WHERE l.status = 'DOWN' AND $__timeFilter(l.checked_at) ORDER BY l.checked_at DESC LIMIT 50" } ]
+    }
+  ]
+}

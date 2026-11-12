@@ -1,0 +1,90 @@
+<header class="topbar">
+  <h1>API Health Dashboard</h1>
+  <div class="right">
+    <a *ngIf="auth.canViewLogs()" href="http://localhost:3000" target="_blank">Grafana ↗</a>
+    <span>{{ auth.user?.username }} <b>({{ auth.user?.role }})</b></span>
+    <button class="secondary" (click)="logout()">Logout</button>
+  </div>
+</header>
+
+<main>
+  <section class="filters">
+    <label>Environment
+      <select [(ngModel)]="env" (change)="load()">
+        <option value="">All</option>
+        <option *ngFor="let e of envs" [value]="e">{{ e }}</option>
+      </select>
+    </label>
+    <label>Status
+      <select [(ngModel)]="status" (change)="load()">
+        <option value="">All</option>
+        <option value="UP">Active (UP)</option>
+        <option value="DOWN">Not active (DOWN)</option>
+      </select>
+    </label>
+    <label>Type
+      <select [(ngModel)]="type" (change)="load()">
+        <option value="">All</option>
+        <option *ngFor="let t of types" [value]="t">{{ t }}</option>
+      </select>
+    </label>
+
+    <span class="spacer"></span>
+    <button *ngIf="auth.isAdmin()" (click)="checkAll()">Check all now</button>
+    <small>Auto-refresh {{ 5 }}s · updated {{ lastRefresh | date:'mediumTime' }}</small>
+  </section>
+
+  <p class="err" *ngIf="error">{{ error }}</p>
+
+  <section class="summary">
+    <span>Total: <b>{{ apis.length }}</b></span>
+    <span class="badge UP">UP {{ count('UP') }}</span>
+    <span class="badge DOWN">DOWN {{ count('DOWN') }}</span>
+    <span class="badge UNKNOWN">PENDING {{ count('UNKNOWN') }}</span>
+    <small *ngIf="!auth.canViewLogs()">Your role can't open logs.</small>
+    <small *ngIf="auth.canViewLogs()">Click a row to see its logs.</small>
+  </section>
+
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Env</th><th>Type</th><th>Status</th><th>HTTP</th><th>Response</th><th>Last checked</th></tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let a of apis" (click)="open(a)" [class.clickable]="auth.canViewLogs()" [class.sel]="selected?.id === a.id">
+        <td>{{ a.name }}</td>
+        <td>{{ a.env }}</td>
+        <td>{{ a.type }}</td>
+        <td><span class="badge" [ngClass]="a.status">{{ a.status }}</span></td>
+        <td>{{ a.httpStatus ?? '-' }}</td>
+        <td>{{ a.responseTimeMs != null ? a.responseTimeMs + ' ms' : '-' }}</td>
+        <td>{{ a.lastCheckedAt ? (a.lastCheckedAt | date:'mediumTime') : '-' }}</td>
+      </tr>
+      <tr *ngIf="apis.length === 0"><td colspan="7" class="empty">No APIs match the filters.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- logs panel -->
+  <section class="logs" *ngIf="selected">
+    <div class="logs-head">
+      <h3>Logs: {{ selected.name }} ({{ selected.env }})</h3>
+      <div>
+        <button (click)="checkNow()">Check now</button>
+        <button class="secondary" (click)="close()">Close</button>
+      </div>
+    </div>
+    <small>{{ selected.url }}</small>
+    <table>
+      <thead><tr><th>Time</th><th>Status</th><th>HTTP</th><th>Response</th><th>Message</th></tr></thead>
+      <tbody>
+        <tr *ngFor="let l of logs">
+          <td>{{ l.checkedAt | date:'medium' }}</td>
+          <td><span class="badge" [ngClass]="l.status">{{ l.status }}</span></td>
+          <td>{{ l.httpStatus ?? '-' }}</td>
+          <td>{{ l.responseTimeMs }} ms</td>
+          <td>{{ l.message }}</td>
+        </tr>
+        <tr *ngIf="logs.length === 0"><td colspan="5" class="empty">No logs yet.</td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>

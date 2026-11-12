@@ -1,0 +1,6 @@
+apiVersion: 1
+providers:
+  - name: api-monitor
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards

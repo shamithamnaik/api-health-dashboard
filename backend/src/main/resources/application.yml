@@ -1,0 +1,21 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/monitor
+    username: monitor
+    password: monitor
+  jpa:
+    hibernate:
+      ddl-auto: update          # simple for demo; use Flyway/Liquibase in real projects
+    open-in-view: false
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      auto-offset-reset: earliest
+
+monitor:
+  apis-file: file:../config/apis.yml     # docker overrides via MONITOR_APIS_FILE
+  interval-ms: 15000                     # how often every API is checked
+  topic: api.health.results

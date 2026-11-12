@@ -1,0 +1,80 @@
+# =====================================================================
+#  SINGLE SOURCE OF TRUTH for every monitored API.
+#  Add / edit / remove entries here. The backend re-reads this file on
+#  every check cycle (default 15s) - no rebuild, no restart needed.
+#  Entries removed from this file are disabled automatically.
+#  Unique key = name + env
+#  type: REST | SOAP      env: any text (DEV, QA, ...)
+# =====================================================================
+apis:
+  # ---------- REST ----------
+  - name: Weather (Open-Meteo)
+    env: DEV
+    type: REST
+    url: https://api.open-meteo.com/v1/forecast?latitude=12.30&longitude=76.65&current_weather=true
+  - name: Weather (Open-Meteo)
+    env: QA
+    type: REST
+    url: https://api.open-meteo.com/v1/forecast?latitude=12.30&longitude=76.65&current_weather=true
+
+  - name: GitHub API
+    env: DEV
+    type: REST
+    url: https://api.github.com
+  - name: GitHub API
+    env: QA
+    type: REST
+    url: https://api.github.com
+
+  - name: Posts (JSONPlaceholder)
+    env: DEV
+    type: REST
+    url: https://jsonplaceholder.typicode.com/posts/1
+  - name: Posts (JSONPlaceholder)
+    env: QA
+    type: REST
+    url: https://jsonplaceholder.typicode.com/posts/1
+
+  # deliberately failing ones so you can see DOWN status
+  - name: Billing Service (always 503)
+    env: DEV
+    type: REST
+    url: https://httpbin.org/status/503
+  - name: Orders Service (expects 200, gets 500)
+    env: QA
+    type: REST
+    url: https://httpbin.org/status/500
+    expectedStatus: 200
+
+  # ---------- SOAP ----------
+  - name: Calculator Add (SOAP)
+    env: DEV
+    type: SOAP
+    url: http://www.dneonline.com/calculator.asmx
+    soapAction: http://tempuri.org/Add
+    body: |
+      <?xml version="1.0" encoding="utf-8"?>
+      <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+        <soap:Body><Add xmlns="http://tempuri.org/"><intA>2</intA><intB>3</intB></Add></soap:Body>
+      </soap:Envelope>
+  - name: Calculator Add (SOAP)
+    env: QA
+    type: SOAP
+    url: http://www.dneonline.com/calculator.asmx
+    soapAction: http://tempuri.org/Add
+    timeoutMs: 8000
+    body: |
+      <?xml version="1.0" encoding="utf-8"?>
+      <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+        <soap:Body><Add xmlns="http://tempuri.org/"><intA>10</intA><intB>20</intB></Add></soap:Body>
+      </soap:Envelope>
+  - name: Country Info (SOAP)
+    env: QA
+    type: SOAP
+    url: http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso
+    soapAction: http://www.oorsprong.org/websamples.countryinfo/CapitalCity
+    body: |
+      <?xml version="1.0" encoding="utf-8"?>
+      <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+        <soap:Body><CapitalCity xmlns="http://www.oorsprong.org/websamples.countryinfo"><sCountryISOCode>IN</sCountryISOCode></CapitalCity></soap:Body>
+      </soap:Envelope>

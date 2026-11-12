@@ -1,0 +1,17 @@
+.topbar { display: flex; justify-content: space-between; align-items: center; background: #1e293b; color: #fff; padding: 10px 24px; }
+.topbar h1 { margin: 0; font-size: 20px; }
+.topbar .right { display: flex; gap: 16px; align-items: center; }
+.topbar a { color: #93c5fd; text-decoration: none; }
+main { padding: 20px 24px; max-width: 1200px; margin: 0 auto; }
+.filters { display: flex; gap: 16px; align-items: flex-end; margin-bottom: 14px; }
+.filters label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.spacer { flex: 1; }
+.summary { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+.err { color: #dc2626; }
+.clickable { cursor: pointer; }
+.clickable:hover, .sel { background: #eef4ff; }
+.empty { text-align: center; color: #888; }
+.logs { margin-top: 24px; background: #fff; padding: 16px; border-radius: 6px; box-shadow: 0 1px 4px #0002; }
+.logs-head { display: flex; justify-content: space-between; align-items: center; }
+.logs-head h3 { margin: 0; }
+.logs-head button { margin-left: 8px; }
