@@ -6,11 +6,6 @@ Spring Boot (MVC) + PostgreSQL + Kafka + Grafana + Angular, all in Docker.
 ```bash
 docker compose up --build
 ```
-| What | URL |
-|---|---|
-| Dashboard (Angular) | http://localhost:4200 |
-| Backend API | http://localhost:8080 |
-| Grafana | http://localhost:3000 (admin / admin) |
 
 ## Users
 | user / password | role | can do |
